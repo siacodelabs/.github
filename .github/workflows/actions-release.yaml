@@ -73,5 +73,7 @@ jobs:
           git push origin --tags
       
       - name: Create and publish release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create ${{ env.version }} -t "Release: ${{ env.version }}"
