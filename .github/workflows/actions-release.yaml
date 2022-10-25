@@ -51,8 +51,17 @@ jobs:
       - name: Update package.json if needed
         if: env.actionType == 'JavaScript'
         run: |
+          # (1) determine version x.y.z to use
           version=${{ env.version }}
+
+          if [[ $version != *.* ]]; then
+            version=$version.0.0
+          fi
+
+          # (2) set version
           npm version --no-commit-hooks --no-git-tag-version ${version:1}
+
+          # (3) commit changes
           git add package.json
           git add package-lock.json
           git commit -m "release: ${{ env.version }}"
