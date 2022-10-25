@@ -36,7 +36,7 @@ jobs:
       
       - name: Setup Node.js ${{ env.nodejs }} if action type is JavaScript
         if: env.actionType == 'JavaScript'
-        uses: actions/setup-node
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ env.nodejs }}
       
