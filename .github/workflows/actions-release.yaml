@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Version tag to publish
+        required: true
+        type: string
+
+env:
+  version: ${{ inputs.version }}
+  nodejs: 16.x
+  actionType: composite
+
+jobs:
+  release:
+    name: Publish action ${{ env.version }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+      
+      - name: Configure Git metadata
+        run: |
+          git config --local user.name ${{ github.actor }}
+          git config --local user.username ${{ github.actor }}
+          git config --local user.email ${{ github.actor }}@users.noreply.github.com
+      
+      - name: Determine action type
+        run: |
+          if [[ -f package.json ]]; then
+            echo "actionType=JavaScript" >> $GITHUB_ENV
+          fi
+      
+      - name: Setup Node.js ${{ env.nodejs }} if action type is JavaScript
+        if: env.actionType == 'JavaScript'
+        uses: actions/setup-node
+        with:
+          node-version: ${{ env.nodejs }}
+      
+      - name: Update version tag to use if needed
+        run: |
+          tag="${{ env.version }}"
+
+          if [[ "$tag" != v* ]]; then
+            echo "version=v$tag" >> $GITHUB_ENV
+          fi
+      
+      - name: Update package.json if needed
+        if: env.actionType == 'JavaScript'
+        run: |
+          version=${{ env.version }}
+          npm version --no-commit-hooks --no-git-tag-version ${version:1}
+          git add package.json
+          git add package-lock.json
+          git commit -m "release: ${{ env.version }}"
+      
+      - name: Create and publish release tag
+        run: |
+          git tag -a ${{ env.version }} -m "release: ${{ env.version }}"
+          git push  # required if JavaScript
+          git push origin --tags
+      
+      - name: Create and publish release
+        run: |
+          gh release create ${{ env.version }} -t "Release: ${{ env.version }}"

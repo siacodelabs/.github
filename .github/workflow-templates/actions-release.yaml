@@ -1,0 +1,14 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - $default-branch
+      
+  pull_request:
+    branches:
+      - $default-branch
+
+jobs:
+  runTests:
+    uses: siacodelabs/.github/.github/workflows/actions-release.yaml@main
