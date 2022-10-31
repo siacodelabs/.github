@@ -10,5 +10,7 @@ on:
       - $default-branch
 
 jobs:
-  runTests:
+  unit-tests:
     uses: siacodelabs/.github/.github/workflows/nodets-ci.yaml@main
+    # with:
+    #   setup-antlr4: true

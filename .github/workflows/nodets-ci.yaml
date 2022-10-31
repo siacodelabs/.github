@@ -3,7 +3,7 @@ name: CI
 on:
   workflow_call:
     inputs:
-      setupAntlr4:
+      setup-antlr4:
         description: Set up Antlr4.
         required: false
         type: boolean
@@ -17,7 +17,7 @@ defaults:
     shell: bash -e {0}
 
 jobs:
-  runTests:
+  unit-tests:
     name: Node.js ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
@@ -36,7 +36,7 @@ jobs:
       
       - name: Set up Antlr4
         uses: siacodelabs/setup-antlr4@v2
-        if: inputs.setupAntlr4
+        if: inputs.setup-antlr4
         with:
           antlr4-version: 4.11.1
       
